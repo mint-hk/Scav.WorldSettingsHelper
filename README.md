@@ -44,6 +44,14 @@ WorldSettingsApi.GetFloat(string key, float fallback);
 WorldSettingsApi.GetInt(string key, int fallback);
 ```
 
+Registered defaults are inserted automatically when settings are read and when the helper patches the vanilla settings UI. Mods normally do not need to call any default-injection method themselves.
+
+Advanced/manual default sync is also available if a mod needs to prepare a specific settings dictionary:
+
+```csharp
+WorldSettingsApi.EnsureDefaults(Dictionary<string, object> values);
+```
+
 ## Example
 
 ```csharp
@@ -74,5 +82,5 @@ float interval = WorldSettingsApi.GetFloat("example_interval", 10f);
 
 - The helper clones existing vanilla setting rows after the custom settings menu is built.
 - It does not patch the game's static run settings registry early.
-- It keeps default values present in setting dictionaries to avoid missing-key crashes.
+- It keeps default values present in setting dictionaries automatically to avoid missing-key crashes.
 - Dropdown values are returned as the game's stored integer index.

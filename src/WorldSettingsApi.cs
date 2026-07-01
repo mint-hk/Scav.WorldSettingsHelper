@@ -70,6 +70,7 @@ namespace Scav.WorldSettingsHelper
         {
             value = null;
             var settings = WorldGeneration.runSettings;
+            EnsureDefaults(settings);
             return settings != null && settings.TryGetValue(key, out value);
         }
 
