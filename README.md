@@ -59,6 +59,7 @@ using BepInEx;
 using Scav.WorldSettingsHelper;
 
 [BepInPlugin("com.example.testmod", "Test Mod", "1.0.0")]
+[BepInDependency(WorldSettingsHelperPlugin.PluginGuid)]
 public class TestModPlugin : BaseUnityPlugin
 {
     private void Awake()

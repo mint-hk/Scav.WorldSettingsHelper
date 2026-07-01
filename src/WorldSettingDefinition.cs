@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Scav.WorldSettingsHelper
 {
@@ -11,14 +12,27 @@ namespace Scav.WorldSettingsHelper
 
     public sealed class WorldSettingDefinition
     {
-        public string Key { get; set; }
-        public string Label { get; set; }
-        public WorldSettingKind Kind { get; set; }
-        public object DefaultValue { get; set; }
-        public float Min { get; set; }
-        public float Max { get; set; }
-        public bool WholeNumbers { get; set; }
-        public string Postfix { get; set; }
-        public List<string> Options { get; set; }
+        internal WorldSettingDefinition(string key, string label, WorldSettingKind kind, object defaultValue, float min = 0f, float max = 0f, bool wholeNumbers = false, string postfix = null, IEnumerable<string> options = null)
+        {
+            Key = key;
+            Label = label;
+            Kind = kind;
+            DefaultValue = defaultValue;
+            Min = min;
+            Max = max;
+            WholeNumbers = wholeNumbers;
+            Postfix = postfix ?? string.Empty;
+            Options = new ReadOnlyCollection<string>(new List<string>(options ?? new string[0]));
+        }
+
+        public string Key { get; }
+        public string Label { get; }
+        public WorldSettingKind Kind { get; }
+        public object DefaultValue { get; }
+        public float Min { get; }
+        public float Max { get; }
+        public bool WholeNumbers { get; }
+        public string Postfix { get; }
+        public IReadOnlyList<string> Options { get; }
     }
 }

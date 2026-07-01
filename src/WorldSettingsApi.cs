@@ -13,18 +13,24 @@ namespace Scav.WorldSettingsHelper
 
         public static void AddBool(string key, string label, bool defaultValue)
         {
-            Definitions[key] = new WorldSettingDefinition { Key = key, Label = label, Kind = WorldSettingKind.Bool, DefaultValue = defaultValue };
+            ValidateNewSetting(key, label);
+            Definitions[key] = new WorldSettingDefinition(key, label, WorldSettingKind.Bool, defaultValue);
         }
 
         public static void AddFloat(string key, string label, float defaultValue, float min, float max, bool wholeNumbers, string postfix)
         {
-            Definitions[key] = new WorldSettingDefinition { Key = key, Label = label, Kind = WorldSettingKind.Float, DefaultValue = defaultValue, Min = min, Max = max, WholeNumbers = wholeNumbers, Postfix = postfix ?? string.Empty };
+            ValidateNewSetting(key, label);
+            if (min > max) throw new ArgumentException("Minimum value cannot be greater than maximum value.", nameof(min));
+            Definitions[key] = new WorldSettingDefinition(key, label, WorldSettingKind.Float, Mathf.Clamp(defaultValue, min, max), min, max, wholeNumbers, postfix);
         }
 
         public static void AddDropdown(string key, string label, IEnumerable<string> options, int defaultIndex)
         {
+            ValidateNewSetting(key, label);
             var optionList = new List<string>(options ?? Array.Empty<string>());
-            Definitions[key] = new WorldSettingDefinition { Key = key, Label = label, Kind = WorldSettingKind.Dropdown, DefaultValue = Mathf.Clamp(defaultIndex, 0, Math.Max(0, optionList.Count - 1)), Options = optionList };
+            optionList.RemoveAll(string.IsNullOrWhiteSpace);
+            if (optionList.Count == 0) throw new ArgumentException("Dropdown settings require at least one non-empty option.", nameof(options));
+            Definitions[key] = new WorldSettingDefinition(key, label, WorldSettingKind.Dropdown, Mathf.Clamp(defaultIndex, 0, optionList.Count - 1), options: optionList);
         }
 
         public static bool GetBool(string key, bool fallback)
@@ -52,6 +58,13 @@ namespace Scav.WorldSettingsHelper
         internal static bool IsCustomKey(string key) => key != null && Definitions.ContainsKey(key);
         internal static string GetLabel(string key) => Definitions.TryGetValue(key, out var definition) ? definition.Label : key;
         internal static List<string> GetOptions(string key) => Definitions.TryGetValue(key, out var definition) && definition.Options != null ? new List<string>(definition.Options) : new List<string>();
+
+        private static void ValidateNewSetting(string key, string label)
+        {
+            if (string.IsNullOrWhiteSpace(key)) throw new ArgumentException("Setting key cannot be empty.", nameof(key));
+            if (string.IsNullOrWhiteSpace(label)) throw new ArgumentException("Setting label cannot be empty.", nameof(label));
+            if (Definitions.ContainsKey(key)) throw new InvalidOperationException($"A world setting with key '{key}' is already registered.");
+        }
 
         internal static RunSetting CreateRunSetting(WorldSettingDefinition definition)
         {

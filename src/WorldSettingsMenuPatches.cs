@@ -35,7 +35,11 @@ namespace Scav.WorldSettingsHelper
         {
             if (HasRow(menu, setting.name)) return;
             var template = FindTemplate(menu, setting);
-            if (template == null) return;
+            if (template == null)
+            {
+                WorldSettingsHelperPlugin.Log?.LogWarning($"Could not add custom world setting '{setting.name}' because no compatible vanilla setting row was found.");
+                return;
+            }
             var parent = menu.customSettingContent != null ? menu.customSettingContent : template.transform.parent;
             var cloneObject = Object.Instantiate(template.gameObject, parent);
             cloneObject.name = "Scav.WorldSettingsHelper_" + setting.name;
