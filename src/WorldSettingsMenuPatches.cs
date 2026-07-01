@@ -100,10 +100,9 @@ namespace Scav.WorldSettingsHelper
                 if (dropdown != null)
                 {
                     var selectedValue = dropdown.value;
-                    dropdown.ClearOptions();
                     var options = WorldSettingsApi.GetOptions(setting.name);
-                    dropdown.AddOptions(options);
-                    dropdown.value = Mathf.Clamp(selectedValue, 0, Mathf.Max(0, options.Count - 1));
+                    dropdown.options = options.ConvertAll(option => new TMP_Dropdown.OptionData(option));
+                    dropdown.SetValueWithoutNotify(Mathf.Clamp(selectedValue, 0, Mathf.Max(0, options.Count - 1)));
                     dropdown.RefreshShownValue();
                 }
             }
