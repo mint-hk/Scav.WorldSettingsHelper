@@ -99,8 +99,11 @@ namespace Scav.WorldSettingsHelper
                 var dropdown = row.GetComponentInChildren<TMP_Dropdown>(true);
                 if (dropdown != null)
                 {
+                    var selectedValue = dropdown.value;
                     dropdown.ClearOptions();
-                    dropdown.AddOptions(WorldSettingsApi.GetOptions(setting.name));
+                    var options = WorldSettingsApi.GetOptions(setting.name);
+                    dropdown.AddOptions(options);
+                    dropdown.value = Mathf.Clamp(selectedValue, 0, Mathf.Max(0, options.Count - 1));
                     dropdown.RefreshShownValue();
                 }
             }
